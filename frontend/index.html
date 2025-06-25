@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta tu Excel con Gemini</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Consulta tu Excel con Gemini</h1>
+        <p>Escribe tu pregunta relacionada con los datos cargados (por ejemplo: <em>"¿Cuántas filas hay?"</em>)</p>
+
+        <form id="consultaForm">
+            <textarea name="pregunta" rows="4" placeholder="¿Qué quieres saber?"></textarea>
+            <button type="submit">Enviar consulta</button>
+        </form>
+
+        <div id="respuesta" class="respuesta" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const pregunta = document.querySelector('textarea[name="pregunta"]').value;
+            const respuestaDiv = document.getElementById('respuesta');
+            
+            respuestaDiv.style.display = 'block';
+            respuestaDiv.innerHTML = '⏳ Consultando...';
+
+            try {
+                const res = await fetch('/consultar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pregunta })
+                });
+                const data = await res.json();
+                respuestaDiv.innerHTML = `<strong>Respuesta:</strong><br>${data.respuesta}`;
+            } catch (error) {
+                respuestaDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
